@@ -1,0 +1,19 @@
+{
+  "name": "new-d2-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "testfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoakimSM/new-d2-tracker.git"
+  },
+  "author": "Joakim Melseth <joakim.melseth@abaris.no>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/JoakimSM/new-d2-tracker/issues"
+  },
+  "homepage": "https://github.com/JoakimSM/new-d2-tracker#readme"
+}
