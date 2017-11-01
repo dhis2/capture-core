@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/JoakimSM/new-d2-tracker/issues"
   },
-  "homepage": "https://github.com/JoakimSM/new-d2-tracker#readme"
+  "homepage": "https://github.com/JoakimSM/new-d2-tracker#readme",
+  "dependencies": {
+    "d2-utilizr": "^0.2.15",
+    "react": "^16.0.0",
+    "prop-types": "^15.6.0",
+    "redux": "^3.7.2",
+    "loglevel": "^1.5.1"
+  }
 }
