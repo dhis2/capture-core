@@ -24,9 +24,11 @@
     "loglevel": "^1.5.1"
   },
   "devDependencies": {
+      "d2": "^28.3.0",
       "d2-ui": "^28.0.3",
-      "react-redux": "^5.0.6",
-      "d2-utilizr": "^0.2.15",
-      "fake-indexeddb": "^2.0.3"
+      "d2-utilizr": "^0.2.15",            
+      "fake-indexeddb": "^2.0.3",
+      "jest-localstorage-mock": "^2.1.0",
+      "react-redux": "^5.0.6"
   }
 }

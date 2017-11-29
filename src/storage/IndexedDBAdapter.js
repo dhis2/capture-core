@@ -71,7 +71,7 @@ class IndexedDBAdapter {
     constructor(options) {
         this.name = options.name;
         this.version = options.version;
-        this.objectStoreNames = options.objectStore;
+        this.objectStoreNames = options.objectStores;
         this.keyPath = options.keyPath;
     }
 
