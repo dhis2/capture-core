@@ -1,6 +1,6 @@
 // @flow
-import LoadSpecification from './LoadSpecification';
-import getterTypes from '../loader/getterTypes.const';
+import LoadSpecification from '../LoadSpecificationDefinition/LoadSpecification';
+import getterTypes from '../../api/fetcher/getterTypes.const';
 import { loadStoreDataIfNotExists } from '../loader/storeDataLoaders';
 
 function converter(d2Model) {

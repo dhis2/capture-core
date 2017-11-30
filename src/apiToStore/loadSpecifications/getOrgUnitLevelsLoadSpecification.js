@@ -1,6 +1,6 @@
 // @flow
-import LoadSpecification from './LoadSpecification';
-import getterTypes from '../loader/getterTypes.const';
+import LoadSpecification from '../LoadSpecificationDefinition/LoadSpecification';
+import getterTypes from '../../api/fetcher/getterTypes.const';
 import { loadStoreDataIfNotExists } from '../loader/storeDataLoaders';
 
 function converter(d2Model) {
@@ -11,20 +11,20 @@ function converter(d2Model) {
     return d2Model.map(item => ({
         id: item.id,
         displayName: item.displayName,
-        aIsToB: item.aIsToB,
-        bIsToA: item.bIsToA,
+        level: item.level,
     }));
 }
 
-export default function getRelationshipsLoadSpecification(storeName: string = 'relationshipTypes'): LoadSpecification {
+export default function getOrgUnitLevelsLoadSpecification(storeName: string = 'ouLevels'): LoadSpecification {
     return new LoadSpecification((_this) => {
         _this.converter = converter;
         _this.d2ModelGetterType = getterTypes.LIST;
-        _this.d2ModelName = 'relationshipTypes';
+        _this.d2ModelName = 'organisationUnitLevels';
         _this.loader = loadStoreDataIfNotExists;
         _this.objectStore = storeName;
         _this.queryParams = {
-            fields: 'id,displayName,aIsToB,bIsToA',
+            fields: 'id,displayName,level',
+            filter: 'level:gt:1',
         };
     });
 }

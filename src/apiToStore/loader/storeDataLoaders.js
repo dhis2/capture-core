@@ -1,12 +1,9 @@
 // @flow
-import Model from 'd2/lib/model/Model';
+import getData from '../../api/fetcher/apiFetchers';
 
 import StorageContainer from '../../storage/StorageContainer';
-import getD2 from '../../d2/d2Instance';
-import commonQueryParams from './commonQueryParams';
-import getterTypes from './getterTypes.const';
-
-export type Converter = (d2Model: Model) => ?Array;
+import getterTypes from '../../api/fetcher/getterTypes.const';
+import type { Converter } from '../../api/fetcher/apiFetchers';
 
 export async function loadStoreData(
     storageContainer: StorageContainer,
@@ -16,21 +13,11 @@ export async function loadStoreData(
     d2ModelGetterType: $Values<typeof getterTypes>,
     converter: Converter,
 ) {
-    const d2 = getD2();
-    const accQueryParams = { ...queryParams, ...commonQueryParams };
-
-    let retrievedData;
-    if (d2ModelGetterType === getterTypes.GET) {
-        retrievedData = await d2.models[d2ModelName][d2ModelGetterType]();
-    } else {
-        retrievedData = await d2.models[d2ModelName][d2ModelGetterType](accQueryParams);
-        retrievedData = [...retrievedData.values()];
+    const convertedData = await getData(d2ModelName, d2ModelGetterType, queryParams, converter);
+    if (convertedData) {
+        await storageContainer.setAll(objectStore, convertedData);
     }
-
-    const convertedCata = converter(retrievedData);
-    if (convertedCata) {
-        await storageContainer.setAll(objectStore, convertedCata);
-    }
+    return convertedData;
 }
 
 export async function loadStoreDataIfNotExists(
@@ -47,3 +34,5 @@ export async function loadStoreDataIfNotExists(
         await loadStoreData(storageContainer, objectStore, queryParams, d2ModelName, d2ModelGetterType, converter);
     }
 }
+
+
