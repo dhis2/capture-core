@@ -18,6 +18,10 @@ class ApiSpecification {
         this.queryParams = { ...this.queryParams, ...queryParams };
     }
 
+    setFilter(filter: string) {
+        this.queryParams = { ...this.queryParams, filter };
+    }
+
     get() {
         return getData(this.modelName, this.modelGetterType, this.queryParams, this.converter);
     }
