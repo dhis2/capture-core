@@ -30,7 +30,6 @@ function getProgramStages(d2ProgramStagesCollection) {
         }));
         return programStage;
     });
-
     programStages.sort((a, b) => {
         const mainSortField = 'sortOrder';
 
