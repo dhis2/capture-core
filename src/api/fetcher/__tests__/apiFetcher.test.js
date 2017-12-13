@@ -8,7 +8,7 @@ jest.mock('../../../d2/d2Instance');
 getD2.mockImplementation(() => ({
     models: {
         programs: {
-            [getterTypes.LIST]: async queryParams => ({
+            [getterTypes.LIST]: async () => ({
                 values: () => [
                     {
                         id: '1',

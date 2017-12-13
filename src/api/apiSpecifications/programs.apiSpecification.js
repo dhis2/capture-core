@@ -5,33 +5,9 @@ import Model from 'd2/lib/model/Model';
 import ApiSpecification from '../ApiSpecificationDefinition/ApiSpecification';
 import getterTypes from '../fetcher/getterTypes.const';
 
-function convertFromCollectionToArray(collection) {
-    if (!collection || collection.size === 0) {
-        return [];
-    }
-    return [...collection.toArray()];
-}
-
-function getProgramStageSections(d2SectionsCollection) {
-    const d2Sections = convertFromCollectionToArray(d2SectionsCollection);
-    return d2Sections.map(section => ({
-        id: section.id,
-    }));
-}
-
-function getProgramStages(d2ProgramStagesCollection) {
-    const d2ProgramStages = convertFromCollectionToArray(d2ProgramStagesCollection);
-
-    const programStages = d2ProgramStages.map((d2ProgramStage) => {
-        const programStage = { ...d2ProgramStage.dataValues };
-        programStage.programStageSections = getProgramStageSections(programStage.programStageSections);
-        programStage.notificationTemplates = convertFromCollectionToArray(programStage.notificationTemplates).map(template => ({
-            id: template.id,
-        }));
-        return programStage;
-    });
-    programStages.sort((a, b) => {
-        const mainSortField = 'sortOrder';
+function sort(arr: Array<any>, key: string = 'sortOrder') {
+    arr.sort((a, b) => {
+        const mainSortField = key;
 
         if (!isDefined(a[mainSortField])) {
             return 1;
@@ -41,6 +17,72 @@ function getProgramStages(d2ProgramStagesCollection) {
 
         return a[mainSortField] - b[mainSortField];
     });
+    return arr;
+}
+
+function convertFromCollectionToArray(collection) {
+    if (!collection || collection.size === 0) {
+        return [];
+    }
+    return [...collection.toArray()];
+}
+
+function getSectionDataElements(d2dataElementCollection) {
+    const d2DataElements = convertFromCollectionToArray(d2dataElementCollection);
+    return d2DataElements.map(d2DataElement => ({
+        id: d2DataElement.id,
+    }));
+}
+
+function getProgramStageSections(d2SectionsCollection) {
+    const d2Sections = convertFromCollectionToArray(d2SectionsCollection);
+    const sections = d2Sections.map(section => ({
+        id: section.id,
+        displayName: section.displayName,
+        sortOrder: section.sortOrder,
+        dataElements: getSectionDataElements(section.dataElements),
+    }));
+
+    sort(sections);
+
+    return sections;
+}
+
+function convertTranslationsToObject(translations) {
+    if (!translations) {
+        return [];
+    }
+
+    return translations.reduce((accTranslationObject, translation) => {
+        if (!accTranslationObject[translation.locale]) {
+            accTranslationObject[translation.locale] = {};
+        }
+        accTranslationObject[translation.locale][translation.property] = translation.value;
+        return accTranslationObject;
+    }, {});
+}
+
+function getProgramStageDataElements(programStageDataElements) {
+    return programStageDataElements.map((programStageDataElement) => {
+        programStageDataElement.dataElement.translations = convertTranslationsToObject(programStageDataElement.dataElement.translations);
+        return programStageDataElement;
+    });
+}
+
+function getProgramStages(d2ProgramStagesCollection) {
+    const d2ProgramStages = convertFromCollectionToArray(d2ProgramStagesCollection);
+
+    const programStages = d2ProgramStages.map((d2ProgramStage) => {
+        const programStage = { ...d2ProgramStage.dataValues };
+        programStage.programStageDataElements = getProgramStageDataElements(programStage.programStageDataElements);
+        programStage.programStageSections = getProgramStageSections(programStage.programStageSections);
+        programStage.notificationTemplates = convertFromCollectionToArray(programStage.notificationTemplates).map(template => ({
+            id: template.id,
+        }));
+        return programStage;
+    });
+
+    sort(programStages);
 
     return programStages;
 }
