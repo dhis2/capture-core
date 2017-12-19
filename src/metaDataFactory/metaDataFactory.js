@@ -1,10 +1,17 @@
 // @flow
+import log from 'loglevel';
+
 import programCollection from '../metaData/programCollection/programCollection';
 import Program from '../metaData/Program/Program';
 import Stage from '../metaData/Stage/Stage';
 import Section from '../metaData/Stage/Section';
 import DataElement from '../metaData/DataElement/DataElement';
+import OptionSet from '../metaData/OptionSet/OptionSet';
+import Option from '../metaData/OptionSet/Option';
+
+import { optionSetConvertersForType } from '../converters/serverToClient';
 import isNonEmptyArray from '../utils/isNonEmptyArray';
+import errorCreator from '../utils/errorCreator';
 
 type D2Translation = {
     property: string,
@@ -19,7 +26,9 @@ type D2DataElement = {
     displayFormName: string,
     valueType: string,
     translations: Array<D2Translation>,
-    description: string
+    description: string,
+    optionSetValue: boolean,
+    optionSet: { id: string }
 };
 
 type D2ProgramStageDataElement = {
@@ -63,7 +72,20 @@ type D2ProgramStageDataElementsAsObject = {
     [id: string]: D2ProgramStageDataElement
 };
 
-let currentLocale;
+type D2Option = {
+    id: string,
+    code: string,
+    displayName: string
+};
+
+type D2OptionSet = {
+    id: string,
+    valueType: string,
+    options: Array<D2Option>
+};
+
+let currentLocale: ?string;
+let currentD2OptionSets: ?Array<D2OptionSet>;
 
 const propertyNames = {
     NAME: 'NAME',
@@ -72,11 +94,35 @@ const propertyNames = {
     FORM_NAME: 'FORM_NAME',
 };
 
+const OPTION_SET_NOT_FOUND = 'Optionset not found';
+
 function getDataElementType(d2ValueType: string) {
     const converters = {
     };
 
     return converters[d2ValueType] || d2ValueType;
+}
+
+function buildOptionSet(id: string, dataElement: DataElement) {
+    const d2OptionSet = currentD2OptionSets && currentD2OptionSets.find(d2Os => d2Os.id === id);
+
+    if (!d2OptionSet) {
+        log.warn(
+            errorCreator(OPTION_SET_NOT_FOUND)({ id }),
+        );
+        return null;
+    }
+
+    dataElement.type = getDataElementType(d2OptionSet.valueType);
+
+    const options = d2OptionSet.options.map(d2Option =>
+        new Option((_this) => {
+            _this.value = d2Option.code;
+            _this.text = d2Option.displayName;
+        }),
+    );
+
+    return new OptionSet(options, dataElement, null, optionSetConvertersForType);
 }
 
 function getDataElementTranslation(d2DataElement: D2DataElement, property: $Values<typeof propertyNames>) {
@@ -97,6 +143,10 @@ function buildDataElement(d2ProgramStageDataElement: D2ProgramStageDataElement) 
         _this.disabled = false;
         _this.type = getDataElementType(d2DataElement.valueType);
     });
+
+    if (d2DataElement.optionSet && d2DataElement.optionSet.id) {
+        dataElement.optionSet = buildOptionSet(d2DataElement.optionSet.id, dataElement);
+    }
 
     return dataElement;
 }
@@ -182,8 +232,12 @@ function buildProgram(d2Program: D2Program) {
     return program;
 }
 
-export default function buildProgramCollection(d2Programs: ?Array<D2Program>, locale: ?string) {
+export default function buildProgramCollection(
+    d2Programs: ?Array<D2Program>,
+    d2OptionSets: ?Array<D2OptionSet>,
+    locale: ?string) {
     currentLocale = locale;
+    currentD2OptionSets = d2OptionSets;
 
     if (d2Programs) {
         d2Programs.forEach((d2Program) => {

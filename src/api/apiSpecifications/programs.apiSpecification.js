@@ -118,6 +118,7 @@ export default new ApiSpecification((_this) => {
             displayShortName: d2Program.displayShortName,
             created: d2Program.created,
             description: d2Program.displayDescription,
+            version: d2Program.version,
             programStages: getProgramStages(d2Program.programStages),
             organisationUnits: getOrganisationUnits(d2Program.organisationUnits),
         }));

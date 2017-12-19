@@ -14,7 +14,7 @@ import Section from './Section';
 // import elementTypeKeys from '../DataElement/elementTypes';
 
 export default class Stage {
-    _id: string | number;
+    _id: string;
     _name: string;
     _description: ?string;
     _programId: string;
@@ -25,10 +25,10 @@ export default class Stage {
         initFn && isFunction(initFn) && initFn(this);
     }
 
-    set id(id: string | number) {
+    set id(id: string) {
         this._id = id;
     }
-    get id(): string | number {
+    get id(): string {
         return this._id;
     }
 

@@ -6,6 +6,7 @@ import log from 'loglevel';
 import isDefined from 'd2-utilizr/src/isDefined';
 import isFunction from 'd2-utilizr/src/isFunction';
 
+import OptionSet from '../OptionSet/OptionSet';
 import errorCreator from '../../utils/errorCreator';
 import elementTypes from './elementTypes';
 
@@ -23,6 +24,7 @@ export default class DataElement {
     _compulsory: boolean;
     _description: string;
     _type: $Values<typeof elementTypes>;
+    _optionSet: ?OptionSet;
 
     constructor(initFn: ?(_this: DataElement) => void) {
         this.visible = true;
@@ -96,6 +98,13 @@ export default class DataElement {
     }
     get type(): $Values<typeof elementTypes> {
         return this._type;
+    }
+
+    set optionSet(optionSet: ?OptionSet) {
+        this._optionSet = optionSet;
+    }
+    get optionSet(): ?OptionSet {
+        return this._optionSet;
     }
 
     * getPropertyNames(): Generator<string, void, void> {

@@ -29,6 +29,9 @@
       "d2-utilizr": "^0.2.15",            
       "fake-indexeddb": "^2.0.3",
       "jest-localstorage-mock": "^2.1.0",
+      "material-ui": "^0.19.4",
+      "material-ui-next": "npm:material-ui@next",
+      "moment": "^2.19.4",
       "react-redux": "^5.0.6"
   }
 }

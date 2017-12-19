@@ -10,7 +10,7 @@ import DataElement from '../DataElement/DataElement';
 
 export default class Section {
     static MAIN_SECTION_ID = '#MAIN#';
-    static MAIN_SECTION_NAME = 'MAIN';    
+    static MAIN_SECTION_NAME = 'MAIN';
 
     static errorMessages = {
         DATA_ELEMENT_NOT_FOUND: 'Data element was not found',
