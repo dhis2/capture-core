@@ -2,16 +2,17 @@
 import React, { Component, PropTypes } from 'react';
 
 import D2Section from './D2Section.component';
-
 import MetaDataStage from '../../metaData/Stage/Stage';
 
 type Props = {
-    metaDataStage: MetaDataStage,
+    metaDataStage: MetaDataStage
 };
 
 class D2Form extends Component<Props> {
     id: string;
     resolveStateContainerId: () => void;
+    validateForm: () => void;
+    sectionInstances: Map<string, D2Section>;
 
     constructor(props: Props) {
         super(props);
@@ -20,10 +21,35 @@ class D2Form extends Component<Props> {
         this.id = metaData.id;
 
         this.resolveStateContainerId = this.resolveStateContainerId.bind(this);
+        this.validateForm = this.validateForm.bind(this);
+
+        this.sectionInstances = new Map();
+    }
+
+    validateForm() {
+        return Array.from(this.sectionInstances.entries())
+            .map(entry => entry[1])
+            .every((sectionInstance: D2Section) => {
+                if (sectionInstance && sectionInstance.sectionFieldsInstance && sectionInstance.sectionFieldsInstance.getWrappedInstance() && sectionInstance.sectionFieldsInstance.getWrappedInstance().formBuilderInstance) {
+                    const formBuilderInstance = sectionInstance.sectionFieldsInstance.getWrappedInstance().formBuilderInstance;
+                    return formBuilderInstance.state.form.valid;
+                }
+                return true;
+            });
     }
 
     resolveStateContainerId() {
         return this.id;
+    }
+
+    setSectionInstance(instance: ?D2Section, id: string) {
+        if (!instance) {
+            if (this.sectionInstances.has(id)) {
+                this.sectionInstances.delete(id);
+            }
+        } else {
+            this.sectionInstances.set(id, instance);
+        }
     }
 
     render() {
@@ -33,9 +59,10 @@ class D2Form extends Component<Props> {
 
         const sections = metaDataSectionsAsArray.map(section => (
             <D2Section
+                ref={sectionInstance => this.setSectionInstance(sectionInstance, section.id)}
                 key={section.id}
                 sectionMetaData={section}
-                getStateContainerId={this.resolveStateContainerId}
+                getContainerId={this.resolveStateContainerId}
             />
         ));
 

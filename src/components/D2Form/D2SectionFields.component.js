@@ -5,32 +5,56 @@ import buildField from './buildField';
 
 import MetaDataElement from '../../metaData/DataElement/DataElement';
 
+type FormsValues = {
+    [id: string]: any
+};
+
 type Props = {
-    fieldsMetaData: Map<string, MetaDataElement>
+    fieldsMetaData: Map<string, MetaDataElement>,
+    values: FormsValues,
+    onUpdateField: (containerId: string, elementId: string, value: any) => void,
+    getContainerId: () => string
 };
 
 class D2SectionFields extends Component<Props> {
-    static buildField(metaData: MetaDataElement, value: any) {
-        return buildField(metaData, value);
+    static defaultProps = {
+        values: {},
+    };
+
+    handleUpdateField: (elementId: string, value: any) => void;
+    formBuilderInstance: ?FormBuilder;
+
+    constructor(props: Props) {
+        super(props);
+        this.handleUpdateField = this.handleUpdateField.bind(this);
     }
 
     buildFormFields() {
         const elements = this.props.fieldsMetaData;
-        return Array.from(elements.entries()).map(metaDataElement => D2SectionFields.buildField(metaDataElement[1]));
+        const values = this.props.values;
+        return Array.from(elements.entries())
+            .map(entry => entry[1])
+            .map(metaDataElement => buildField(metaDataElement, values[metaDataElement.id]))
+            .filter(field => field);
     }
 
-    handleFieldUpdate(elementId: string, value: any){
-        
+    handleUpdateField(elementId: string, value: any) {
+        // this.props.onUpdateField(this.props.getContainerId(), elementId, value);
     }
 
-    handleUpdateStatus() {
-
+    handleUpdateStatus(a, b, c) {
+        let g = a;
     }
 
     render() {
         return (
             <div>
-                <FormBuilder fields={this.buildFormFields()} onUpdateField={this.handleFieldUpdate} onUpdateFormStatus={this.handleUpdateStatus} />
+                <FormBuilder
+                    ref={(instance) => { this.formBuilderInstance = instance; }}
+                    fields={this.buildFormFields()}
+                    onUpdateField={this.handleUpdateField}
+                    onUpdateFormStatus={this.handleUpdateStatus}
+                />
             </div>
         );
     }

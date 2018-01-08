@@ -62,7 +62,11 @@ export default class Program {
         this.stages.set(stage.id, stage);
     }
 
-    getStage(id: string): Stage {
+    getStage(id: string): ?Stage {
+        return this.stages.get(id);
+    }
+    
+    getStageThrowIfNotFound(id: string): Stage {
         const stage = this.stages.get(id);
         if (!stage) {
             throw new Error(
@@ -70,10 +74,6 @@ export default class Program {
             );
         }
         return stage;
-    }
-
-    getStageIfFound(id: string): ?Stage {
-        return this.stages.get(id);
     }
 
     getStageFromIndex(index: number): Stage {

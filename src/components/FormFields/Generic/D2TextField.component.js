@@ -9,6 +9,9 @@ type Props = {
 };
 
 class D2TextField extends Component<Props> {
+    static defaultProps = {
+        value: '',
+    };
     // goto: () => void;
     materialUIInstance: any;
     materialUIContainerInstance: any;

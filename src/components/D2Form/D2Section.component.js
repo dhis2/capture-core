@@ -2,9 +2,8 @@
 import React, { Component } from 'react';
 import Section from '../Section/Section.component';
 import SectionHeaderSimple from '../Section/SectionHeaderSimple.component';
-import FontIcon from 'material-ui/FontIcon';
 
-import D2SectionFields from './D2SectionFields.component';
+import D2SectionFields from './D2SectionFields.container';
 
 import MetaDataSection from '../../metaData/Stage/Section';
 
@@ -13,6 +12,8 @@ type Props = {
 };
 
 class D2Section extends Component<Props> {
+    sectionFieldsInstance: ?D2SectionFields;
+
     constructor(props: Props) {
         super(props);
     }
@@ -28,12 +29,14 @@ class D2Section extends Component<Props> {
     }
 
     render() {
-        const { sectionMetaData } = this.props;
+        const { sectionMetaData, onUpdateSectionStatus, ...passOnProps } = this.props;
 
         if (!sectionMetaData.showContainer) {
             return (
                 <D2SectionFields
+                    ref={(instance) => { this.sectionFieldsInstance = instance; }}
                     fieldsMetaData={sectionMetaData.elements}
+                    {...passOnProps}
                 />
             );
         }
@@ -44,15 +47,15 @@ class D2Section extends Component<Props> {
                     elevation={2}
                 >
                     <D2SectionFields
+                        ref={(instance) => { this.sectionFieldsInstance = instance; }}
                         fieldsMetaData={sectionMetaData.elements}
+                        onSectionFieldsUpdate={onUpdateSectionStatus}
+                        {...passOnProps}
                     />
                 </Section>
             </div>
         );
     }
 }
-
-D2Section.propTypes = {
-};
 
 export default D2Section;

@@ -8,7 +8,16 @@ declare type D2 = {
         settings: {
             all: () => Object,
         }
+    },
+    i18n: Object,
+    Api: {
+        getApi: () => Object
     }
 };
 
-declare type State = Object;
+// Redux
+declare type ReduxState = Object;
+declare type ReduxDispatch = (action: {
+    type: string,
+    [props: string]: any,
+}) => void;
