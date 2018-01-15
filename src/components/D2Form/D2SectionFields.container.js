@@ -2,10 +2,16 @@
 import { connect } from 'react-redux';
 import D2SectionFields from './D2SectionFields.component';
 import { updateField } from './D2SectionFields.actions';
+import { makeGetSectionValues } from './D2SectionFields.selectors';
 
-const mapStateToProps = (state: Object, props: { getContainerId: () => string }) => ({
-    values: state.formsValues[props.getContainerId()],
-});
+const makeMapStateToProps = () => {
+    const getSectionValues = makeGetSectionValues();
+
+    const mapStateToProps = (state: Object, props: { getContainerId: () => string }) => ({
+        values: getSectionValues(state, props),
+    });
+    return mapStateToProps;
+};
 
 const mapDispatchToProps = (dispatch: ReduxDispatch) => ({
     onUpdateField: (containerId: string, elementId: string, value: any) => {
@@ -13,4 +19,4 @@ const mapDispatchToProps = (dispatch: ReduxDispatch) => ({
     },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(D2SectionFields);
+export default connect(makeMapStateToProps, mapDispatchToProps, null, { withRef: true })(D2SectionFields);

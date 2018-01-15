@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable import/prefer-default-export */
 
 /**
  * Generic action-creator
@@ -7,7 +6,7 @@
  * @returns {object} FSA-compliant action
  */
 export function actionCreator(type: string) {
-    return (payload: any, meta, error) => {
+    return (payload: any, meta: any, error: any) => {
         if (payload == null) {
             payload = {};
         }

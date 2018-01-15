@@ -3,9 +3,17 @@ import React, { Component } from 'react';
 import TextField from 'material-ui/TextField';
 // import gotoFn from '../Utils/gotoMixin';
 
+type UiEvent = {
+    target: {
+        value: string
+    }
+};
+
 type Props = {
     label: string,
-    labelIsFloating: boolean
+    labelIsFloating: boolean,
+    onChange: (value: string) => void,
+    onBlur: (value: string) => void,
 };
 
 class D2TextField extends Component<Props> {
@@ -18,12 +26,14 @@ class D2TextField extends Component<Props> {
 
     constructor(props: propsTypes) {
         super(props);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
         // this.goto = gotoFn;        
     }
 
     buildLabelProps() {
         const { label, labelIsFloating } = this.props;
-        
+
         if (!label) {
             return null;
         }
@@ -38,6 +48,14 @@ class D2TextField extends Component<Props> {
         );
     }
 
+    handleChange(event: UiEvent) {
+        this.props.onChange(event.target.value);
+    }
+
+    handleBlur(event: UiEvent) {
+        this.props.onBlur(event.target.value, event);
+    }
+
     render() {
         const { label, labelIsFloating, ...passOnProps } = this.props;
 
@@ -48,6 +66,8 @@ class D2TextField extends Component<Props> {
                 <TextField
                     ref={(inst) => { this.materialUIInstance = inst; }}
                     {...accProps}
+                    onChange={this.handleChange}
+                    onBlur={this.handleBlur}
                 />
             </div>
         );

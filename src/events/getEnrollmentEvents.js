@@ -5,15 +5,24 @@ import programCollection from '../metaData/programCollection/programCollection';
 import errorCreator from '../utils/errorCreator';
 import { valueConvertersForType } from '../converters/serverToClient';
 
-type apiDataValue = {
+type ApiDataValue = {
     dataElement: string,
     value: any
 };
 
-type apiTEIEvent = {
+type ApiTEIEvent = {
+    event: string,
     program: string,
     programStage: string,
-    dataValues: Array<apiDataValue>
+    orgUnit: string,
+    orgUnitName: string,
+    trackedEntityInstance: string,
+    enrollment: string,
+    enrollmentStatus: string,
+    status: string,
+    eventDate: string,
+    dueDate: string,
+    dataValues: Array<ApiDataValue>
 };
 
 const errorMessages = {
@@ -21,14 +30,30 @@ const errorMessages = {
     STAGE_NOT_FOUND: 'Stage not found',
 };
 
-function getValuesById(apiDataValues: Array<apiDataValue>) {
+function getValuesById(apiDataValues: Array<ApiDataValue>) {
     return apiDataValues.reduce((accValues, dataValue) => {
         accValues[dataValue.dataElement] = dataValue.value;
         return accValues;
     }, {});
 }
 
-function convertToClientEvent(event: apiTEIEvent) {
+function convertMainProperties(apiEvent: ApiTEIEvent): Event {
+    return {
+        eventId: apiEvent.event,
+        programId: apiEvent.program,
+        programStageId: apiEvent.programStage,
+        orgUnitId: apiEvent.orgUnit,
+        orgUnitName: apiEvent.orgUnitName,
+        trackedEntityInstanceId: apiEvent.trackedEntityInstance,
+        enrollmentId: apiEvent.enrollment,
+        enrollmentStatus: apiEvent.enrollmentStatus,
+        status: apiEvent.status,
+        eventDate: valueConvertersForType.DATETIME(apiEvent.eventDate),
+        dueDate: valueConvertersForType.DATETIME(apiEvent.dueDate),
+    };
+}
+
+function convertToClientEvent(event: ApiTEIEvent) {
     const programMetaData = programCollection.get(event.program);
     if (!programMetaData) {
         log.error(errorCreator(errorMessages.PROGRAM_NOT_FOUND)({ fn: 'convertToClientEvent', event }));
@@ -44,14 +69,16 @@ function convertToClientEvent(event: apiTEIEvent) {
     const dataValuesById = getValuesById(event.dataValues);
     const convertedDataValues = stageMetaData.convertValues(dataValuesById, valueConvertersForType);
 
+    const convertedMainProperties = convertMainProperties(event);
+
     return {
-        dataValues: convertedDataValues,
-        program: event.program,
-        programStage: event.programStage,
+        id: convertedMainProperties.eventId,
+        event: convertedMainProperties,
+        values: convertedDataValues,
     };
 }
 
-export default async function getTEIEvents() {
+export default async function getEnrollmentEvents() {
     const api = getApi();
     const apiRes = await api
         .get('events?trackedEntityInstance=a5l62eP6vKb&program=WSGAb5XwJ3Y&programStage=edqlbukwRfQ');
@@ -61,9 +88,9 @@ export default async function getTEIEvents() {
     }
 
     return apiRes.events.reduce((accEvents, apiEvent) => {
-        const event = convertToClientEvent(apiEvent);
-        if (event) {
-            accEvents.push(event);
+        const eventContainer = convertToClientEvent(apiEvent);
+        if (eventContainer) {
+            accEvents.push(eventContainer);
         }
         return accEvents;
     }, []);

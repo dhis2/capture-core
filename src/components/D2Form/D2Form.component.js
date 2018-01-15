@@ -5,12 +5,12 @@ import D2Section from './D2Section.component';
 import MetaDataStage from '../../metaData/Stage/Stage';
 
 type Props = {
-    metaDataStage: MetaDataStage
+    metaDataStage: MetaDataStage,
+    dataId: string,
 };
 
 class D2Form extends Component<Props> {
     id: string;
-    resolveStateContainerId: () => void;
     validateForm: () => void;
     sectionInstances: Map<string, D2Section>;
 
@@ -19,8 +19,7 @@ class D2Form extends Component<Props> {
 
         const metaData = this.props.metaDataStage;
         this.id = metaData.id;
-
-        this.resolveStateContainerId = this.resolveStateContainerId.bind(this);
+        
         this.validateForm = this.validateForm.bind(this);
 
         this.sectionInstances = new Map();
@@ -38,10 +37,6 @@ class D2Form extends Component<Props> {
             });
     }
 
-    resolveStateContainerId() {
-        return this.id;
-    }
-
     setSectionInstance(instance: ?D2Section, id: string) {
         if (!instance) {
             if (this.sectionInstances.has(id)) {
@@ -53,7 +48,7 @@ class D2Form extends Component<Props> {
     }
 
     render() {
-        const { metaDataStage } = this.props;
+        const { metaDataStage, ...passOnProps } = this.props;
 
         const metaDataSectionsAsArray = Array.from(metaDataStage.sections.entries()).map(entry => entry[1]);
 
@@ -62,7 +57,8 @@ class D2Form extends Component<Props> {
                 ref={sectionInstance => this.setSectionInstance(sectionInstance, section.id)}
                 key={section.id}
                 sectionMetaData={section}
-                getContainerId={this.resolveStateContainerId}
+                getDataId={this.resolveStateContainerId}
+                {...passOnProps}
             />
         ));
 

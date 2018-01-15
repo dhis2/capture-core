@@ -22,7 +22,7 @@ export default class OptionSet {
     _options: Array<Option>;
     _viewType: ?$Values<typeof viewTypes>;
 
-    constructor(options: ?Array<Option>, dataElement: DataElement, viewType?: ?string, convertersForType?: ?{[typeId: $Values<typeof elementTypes>]: (value: string) => any}) {
+    constructor(options?: ?Array<Option>, dataElement?: ?DataElement, viewType?: ?string, convertersForType?: ?{[typeId: $Values<typeof elementTypes>]: (value: string) => any}) {
         this._options = !options ? [] : options.reduce((accOptions: Array<Option>, currentOption: Option) => {
             if (currentOption.value || currentOption.value === false || currentOption.value === 0) {
                 if (convertersForType && convertersForType[dataElement.type]) {
@@ -46,11 +46,6 @@ export default class OptionSet {
         } else {
             log.warn(errorCreator(OptionSet.errorMessages.UNSUPPORTED_VIEWTYPE)({ optionSet: this, viewType }));
         }
-    }
-
-    // $FlowSuppress
-    [Symbol.iterator](): Iterator<Option> {
-        return this._options.values();
     }
 
     get emptyText(): ?string {
