@@ -21,6 +21,7 @@ export default class OptionSet {
     _emptyText: ?string;
     _options: Array<Option>;
     _viewType: ?$Values<typeof viewTypes>;
+    _dataElement: ?DataElement;
 
     constructor(options?: ?Array<Option>, dataElement?: ?DataElement, viewType?: ?string, convertersForType?: ?{[typeId: $Values<typeof elementTypes>]: (value: string) => any}) {
         this._options = !options ? [] : options.reduce((accOptions: Array<Option>, currentOption: Option) => {
@@ -38,6 +39,8 @@ export default class OptionSet {
         if (viewType) {
             this.viewType = viewType;
         }
+
+        this._dataElement = dataElement;
     }
 
     set viewType(viewType: string) {
@@ -47,13 +50,23 @@ export default class OptionSet {
             log.warn(errorCreator(OptionSet.errorMessages.UNSUPPORTED_VIEWTYPE)({ optionSet: this, viewType }));
         }
     }
+    get viewType(): ?string {
+        return this._viewType;
+    }
 
     get emptyText(): ?string {
         return this._emptyText;
     }
+    set emptyText(emptyText?: ?string): ?string {
+        this._emptyText = emptyText;
+    }
 
     get options(): Array<Option> {
         return this._options;
+    }
+
+    get dataElement(): ?DataElement {
+        return this._dataElement;
     }
 
     addOption(option: Option) {

@@ -124,4 +124,15 @@ export default class DataElement {
         }
         return object;
     }
+
+    getConvertedOptionSet(convertersForType: ?{[typeId: $Values<typeof elementTypes>]: (value: string) => any}): ?OptionSet {
+        if (this.optionSet) {
+            const currentOptions = [...this.optionSet.options];
+            const convertedOptionSet = new OptionSet(currentOptions, this, this.optionSet.viewType, convertersForType);
+            convertedOptionSet.emptyText = this.optionSet.emptyText;
+
+            return convertedOptionSet;
+        }
+        return null;
+    }
 }

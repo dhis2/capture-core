@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { getTranslation } from '../../../d2/d2Instance';
 import { formatterOptions } from '../../../utils/string/format.const';
-import OptionsCheckBoxes from '../Options/OptionsCheckboxes.component';
+import OptionsCheckBoxes from '../Options/Checkboxes/OptionsCheckboxes.component';
 
 import OptionSet from '../../../metaData/OptionSet/OptionSet';
 import Option from '../../../metaData/OptionSet/Option';

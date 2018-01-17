@@ -9,6 +9,9 @@ type Event = {
 type Props = {
     onBlur: (event: Event) => void,
     onChange: (event: Event) => void,
+    changeEvent: string,
+    errorStyle: ?string,
+    errorText: ?string
 };
 
 export default () =>
@@ -42,7 +45,7 @@ export default () =>
             }
             
             render() {
-                const { onBlur, onChange, ...passOnProps } = this.props;
+                const { onBlur, onChange, changeEvent, errorStyle, errorText, ...passOnProps } = this.props;
 
                 return (
                     <InnerComponent

@@ -3,6 +3,8 @@
 import React, { Component } from 'react';
 import Checkbox from 'material-ui-next/Checkbox';
 import { FormControl, FormLabel, FormGroup, FormControlLabel } from 'material-ui-next/Form';
+import { InputLabel } from 'material-ui-next/Input';
+import { withStyles } from 'material-ui-next/styles';
 
 import RadioOffIcon from 'material-ui/svg-icons/image/panorama-fish-eye';
 import RadioOnIcon from 'material-ui/svg-icons/action/check-circle';
@@ -11,10 +13,14 @@ import isArray from 'd2-utilizr/lib/isArray';
 
 import { orientation } from './optionsCheckboxes.constants';
 
-import OptionSet from '../../../metaData/OptionSet/OptionSet';
-import Option from '../../../metaData/OptionSet/Option';
+import OptionSet from '../../../../metaData/OptionSet/OptionSet';
+import Option from '../../../../metaData/OptionSet/Option';
 
 // import gotoFn from '../Utils/gotoMixin';
+
+const styles = theme => ({
+    label: theme.typography.formFieldTitle,
+});
 
 type Props = {
     onBlur: (value: any) => void,
@@ -23,7 +29,10 @@ type Props = {
     nullable?: boolean,
     multiSelect?: boolean,
     value?: any,
-    orientation?: $Values<typeof orientation>
+    orientation?: $Values<typeof orientation>,
+    required?: ?boolean,
+    error?: ?boolean,
+    classes: Object,
 };
 
 class OptionsCheckboxesField extends Component<Props> {
@@ -31,11 +40,19 @@ class OptionsCheckboxesField extends Component<Props> {
     materialUIContainerInstance: any;
     checkedValues: ?Set<any>;
     goto: () => void;
+    labelClasses: Object;
 
     constructor(props: Props) {
         super(props);
         this.handleOptionChange = this.handleOptionChange.bind(this);
+        this.labelClasses = this.buildLabelClasses();
         // this.goto = gotoFn;
+    }
+
+    buildLabelClasses() {
+        return {
+            root: this.props.classes.label,
+        };
     }
 
     getCheckboxes() {
@@ -131,7 +148,7 @@ class OptionsCheckboxesField extends Component<Props> {
     }
 
     render() {
-        const { label } = this.props;
+        const { label, required, error, classes } = this.props;
 
         this.setCheckedStatusForBoxes();
 
@@ -145,7 +162,13 @@ class OptionsCheckboxesField extends Component<Props> {
                             }
 
                             return (
-                                <FormLabel component="label">
+                                <FormLabel
+                                    component="label"
+                                    required={required}
+                                    error={error}
+                                    classes={this.labelClasses}
+                                    focused={false}
+                                >
                                     {label}
                                 </FormLabel>
                             );
@@ -158,4 +181,4 @@ class OptionsCheckboxesField extends Component<Props> {
     }
 }
 
-export default OptionsCheckboxesField;
+export default withStyles(styles)(OptionsCheckboxesField);

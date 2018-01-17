@@ -47,7 +47,7 @@ class D2SectionFields extends Component<Props> {
         // $FlowSuppress
         return Array.from(elements.entries())
             .map(entry => entry[1])
-            .map(metaDataElement => buildField(metaDataElement, values[metaDataElement.id]))
+            .map(metaDataElement => buildField(metaDataElement))
             .filter(field => field);
     }
 

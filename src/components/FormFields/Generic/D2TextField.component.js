@@ -1,19 +1,12 @@
 // @flow
 import React, { Component } from 'react';
-import TextField from 'material-ui/TextField';
+import TextField from 'material-ui-next/TextField';
 // import gotoFn from '../Utils/gotoMixin';
-
-type UiEvent = {
-    target: {
-        value: string
-    }
-};
 
 type Props = {
     label: string,
-    labelIsFloating: boolean,
-    onChange: (value: string) => void,
-    onBlur: (value: string) => void,
+    onChange: (value: string, event: UiEventData) => void,
+    onBlur: (value: string, event: UiEventData) => void,
 };
 
 class D2TextField extends Component<Props> {
@@ -23,49 +16,33 @@ class D2TextField extends Component<Props> {
     // goto: () => void;
     materialUIInstance: any;
     materialUIContainerInstance: any;
+    handleChange: (event: UiEventData) => void;
+    handleBlur: (event: UiEventData) => void;
 
-    constructor(props: propsTypes) {
+    constructor(props: Props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
         // this.goto = gotoFn;        
     }
 
-    buildLabelProps() {
-        const { label, labelIsFloating } = this.props;
-
-        if (!label) {
-            return null;
-        }
-
-        return (labelIsFloating ?
-            {
-                floatingLabelText: label,
-            } :
-            {
-                hintText: label,
-            }
-        );
+    handleChange(event: UiEventData) {
+        this.props.onChange(event.target.value, event);
     }
 
-    handleChange(event: UiEvent) {
-        this.props.onChange(event.target.value);
-    }
-
-    handleBlur(event: UiEvent) {
+    handleBlur(event: UiEventData) {
         this.props.onBlur(event.target.value, event);
     }
 
     render() {
-        const { label, labelIsFloating, ...passOnProps } = this.props;
+        const { onChange, onBlur, ...passOnProps } = this.props;
 
-        const builtProps = Object.assign({}, this.buildLabelProps());
-        const accProps = { ...passOnProps, ...builtProps };
         return (
             <div ref={(containerInstance) => { this.materialUIContainerInstance = containerInstance; }}>
                 <TextField
-                    ref={(inst) => { this.materialUIInstance = inst; }}
-                    {...accProps}
+                    id={'1'}
+                    inputRef={(inst) => { this.materialUIInstance = inst; }}
+                    {...passOnProps}
                     onChange={this.handleChange}
                     onBlur={this.handleBlur}
                 />

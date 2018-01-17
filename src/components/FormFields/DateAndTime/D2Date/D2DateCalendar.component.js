@@ -4,9 +4,11 @@ import React, { Component } from 'react';
 import { withStyles } from 'material-ui-next/styles';
 import InfiniteCalendar, { Calendar, defaultMultipleDateInterpolation, withMultipleDates } from 'react-infinite-calendar';
 
+import isValidDate from '../../../../utils/validators/date.validator';
 import moment from '../../../../utils/moment/momentResolver';
 import 'react-infinite-calendar/styles.css';
 import CurrentLocaleData from '../../../../utils/localeData/CurrentLocaleData';
+import capitalizeFirstLetter from '../../../../utils/string/capitalizeFirstLetter';
 
 // import makeMaxWidthContainer from 'abaris-ui/src/HOC/makeMaxWidthContainer';
 
@@ -15,12 +17,14 @@ type Props = {
     value?: ?Array<string>,
     minMoment?: ?Object,
     maxMoment?: ?Object,
-    currentWidth: number
+    currentWidth: number,
+    classes: Object,
 };
 
 const styles = theme => ({
-    container: '5px',
-
+    container: {
+       
+    },
 });
 
 class D2DateCalendar extends Component<Props> {
@@ -41,7 +45,7 @@ class D2DateCalendar extends Component<Props> {
         this.calendarLocaleData = {
             locale: projectLocaleData.dateFnsLocale,
             headerFormat: currentWidth >= 400 ? projectLocaleData.calendarFormatHeaderLong : projectLocaleData.calendarFormatHeaderShort,
-            weekdays: projectLocaleData.weekDays,
+            weekdays: projectLocaleData.weekDaysShort.map(day => capitalizeFirstLetter(day)),
             blank: projectLocaleData.selectDatesText,
             todayLabel: {
                 long: projectLocaleData.todayLabelLong,
@@ -74,8 +78,13 @@ class D2DateCalendar extends Component<Props> {
         if (!inputValue) {
             return null;
         }
-        const outputDate = moment(inputValue, 'L').toDate();
-        return outputDate;
+
+        if (!isValidDate(inputValue)) {
+            return null;
+        }
+
+        const momentDate = moment(inputValue, 'L');
+        return momentDate.toDate();
     }
 
     getMinMaxProps() {
@@ -120,7 +129,7 @@ class D2DateCalendar extends Component<Props> {
     }
 }
 
-export default withStyles()(D2DateCalendar);
+export default withStyles(styles)(D2DateCalendar);
 
 // const DateMultiInMaxWidthContainer = makeMaxWidthContainer(400)(DateMulti);
 // theme={DateMulti.calendarTheme}

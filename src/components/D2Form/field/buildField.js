@@ -7,11 +7,17 @@ import TrueFalse from '../../FormFields/Generic/D2TrueFalse.component';
 import TrueOnly from '../../FormFields/Generic/D2TrueOnly.component';
 import D2Date from '../../FormFields/DateAndTime/D2Date/D2Date.component';
 
+import OptionsCheckboxes from '../../FormFields/Options/Checkboxes/OptionsCheckboxes.component';
+import OptionsSelect from '../../FormFields/Options/SelectVirtualized/OptionsSelectVirtualized.component';
+import withSelectTranslations from '../../FormFields/Options/SelectVirtualized/withTranslations';
+import withConvertedOptionSet from '../../FormFields/Options/withConvertedOptionSet';
+
 import getValidators from './validators';
 import MetaDataElement from '../../../metaData/DataElement/DataElement';
 import elementTypes from '../../../metaData/DataElement/elementTypes';
 
 import withFormBuilderInterface from './withFormBuilderInterface';
+import withDefaultFieldContainer from './withDefaultFieldContainer';
 
 import type { ComponentType } from 'react';
 
@@ -49,57 +55,55 @@ const createFieldProps = (fieldProps: Object, metaData: MetaDataElement) => ({
     ...fieldProps,
 });
 
-const getBaseTextField = (metaData: MetaDataElement, value: any) => {
+const getBaseTextField = (metaData: MetaDataElement) => {
     const props = createComponentProps({
         label: metaData.name,
-        labelIsFloating: true,
-        multiLine: false,
+        multiline: false,
     });
 
     return createFieldProps({
         name: metaData.id,
-        value,
-        component: withFormBuilderInterface()(TextField),
+        component: withFormBuilderInterface()(withDefaultFieldContainer()(TextField)),
         props,
     }, metaData);
 };
 
 const fieldForTypes = {
-    [elementTypes.TEXT]: (metaData: MetaDataElement, value: any) => getBaseTextField(metaData, value),
-    [elementTypes.LONG_TEXT]: (metaData: MetaDataElement, value: any) => {
-        const baseField = getBaseTextField(metaData, value);
+    [elementTypes.TEXT]: (metaData: MetaDataElement) => getBaseTextField(metaData),
+    [elementTypes.LONG_TEXT]: (metaData: MetaDataElement) => {
+        const baseField = getBaseTextField(metaData);
         const props = { ...baseField.props, multiLine: true };
         return { ...baseField, props };
     },
-    [elementTypes.NUMBER]: (metaData: MetaDataElement, value: any) => getBaseTextField(metaData, value),
-    [elementTypes.INTEGER]: (metaData: MetaDataElement, value: any) => getBaseTextField(metaData, value),
-    [elementTypes.INTEGER_POSITIVE]: (metaData: MetaDataElement, value: any) => getBaseTextField(metaData, value),
-    [elementTypes.INTEGER_ZERO_OR_POSITIVE]: (metaData: MetaDataElement, value: any) => getBaseTextField(metaData, value),
-    [elementTypes.BOOLEAN]: (metaData: MetaDataElement, value: any) => {
+    [elementTypes.NUMBER]: (metaData: MetaDataElement) => getBaseTextField(metaData),
+    [elementTypes.INTEGER]: (metaData: MetaDataElement) => getBaseTextField(metaData),
+    [elementTypes.INTEGER_POSITIVE]: (metaData: MetaDataElement) => getBaseTextField(metaData),
+    [elementTypes.INTEGER_ZERO_OR_POSITIVE]: (metaData: MetaDataElement) => getBaseTextField(metaData),
+    [elementTypes.BOOLEAN]: (metaData: MetaDataElement) => {
         const props = createComponentProps({
             label: metaData.name,
+            required: metaData.compulsory,
         });
 
         return createFieldProps({
             name: metaData.id,
-            value,
-            component: withFormBuilderInterface()(TrueFalse),
+            component: withFormBuilderInterface()(withDefaultFieldContainer({ marginBottom: 0 })(TrueFalse)),
             props,
         }, metaData);
     },
-    [elementTypes.TRUE_ONLY]: (metaData: MetaDataElement, value: any) => {
+    [elementTypes.TRUE_ONLY]: (metaData: MetaDataElement) => {
         const props = createComponentProps({
             label: metaData.name,
+            nullable: !metaData.compulsory,
         });
 
         return createFieldProps({
             name: metaData.id,
-            value,
-            component: withFormBuilderInterface()(TrueOnly),
+            component: withFormBuilderInterface()(withDefaultFieldContainer()(TrueOnly)),
             props,
         }, metaData);
     },
-    [elementTypes.DATE]: (metaData: MetaDataElement, value: any) => {
+    [elementTypes.DATE]: (metaData: MetaDataElement) => {
         const props = createComponentProps({
             width: 350,
             label: metaData.name,
@@ -107,21 +111,38 @@ const fieldForTypes = {
 
         return createFieldProps({
             name: metaData.id,
-            value,
-            component: withFormBuilderInterface()(D2Date),
+            component: withFormBuilderInterface()(withDefaultFieldContainer()(D2Date)),
             props,
         }, metaData);
     },
-    [elementTypes.TIME]: (metaData: MetaDataElement, value: any) => getBaseTextField(metaData, value),
+    [elementTypes.TIME]: (metaData: MetaDataElement) => getBaseTextField(metaData),
     [elementTypes.UNKNOWN]: () => null,
 };
 
-export default function buildField(metaData: MetaDataElement, value: any) {
+const optionSetField = (metaData: MetaDataElement) => {
+    const props = createComponentProps({
+        label: metaData.name,
+        optionSet: metaData.optionSet,
+        nullable: !metaData.compulsory,
+    });
+
+    return createFieldProps({
+        name: metaData.id,
+        component: withFormBuilderInterface()(withConvertedOptionSet()(withDefaultFieldContainer()(withSelectTranslations()(OptionsSelect)))),
+        props,
+    }, metaData);
+};
+
+export default function buildField(metaData: MetaDataElement) {
     const type = metaData.type;
     if (!fieldForTypes[type]) {
         log.warn(errorCreator(errorMessages.NO_FORMFIELD_FOR_TYPE)({ metaData }));
-        return fieldForTypes[elementTypes.UNKNOWN](metaData, value);
+        return fieldForTypes[elementTypes.UNKNOWN](metaData);
     }
 
-    return fieldForTypes[type](metaData, value);
+    if (metaData.optionSet) {
+        return optionSetField(metaData);
+    }
+
+    return fieldForTypes[type](metaData);
 }

@@ -103,8 +103,7 @@ class D2Date extends React.Component<Props, State> {
                     width,
                 }}
             >
-                <D2TextField
-                    labelIsFloating
+                <D2TextField                    
                     onFocus={this.handleTextFieldFocus}
                     onBlur={this.handleTextFieldBlur}
                     className={classes.textField}

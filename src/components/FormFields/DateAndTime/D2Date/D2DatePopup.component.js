@@ -3,14 +3,16 @@ import * as React from 'react';
 
 type Props = {
     open: boolean,
-    anchorEl: ?HTMLElement,
-    onClose: () => void,
     children: React.Node,
 };
 
 const defaultStyle = {
     position: 'absolute',
-    zIndex: 200,
+    zIndex: 201,
+};
+
+const containerStyle = {
+    position: 'relative',
 };
 
 const D2DatePopup = (props: Props) => {
@@ -19,12 +21,16 @@ const D2DatePopup = (props: Props) => {
         return null;
     }
 
-    const style = { ...defaultStyle, top: 65, left: 0 };
+    const style = { ...defaultStyle, top: 0, left: 0 };
     return (
         <div
-            style={style}
+            style={containerStyle}
         >
-            {children}
+            <div
+                style={style}
+            >
+                {children}
+            </div>
         </div>
     );
 };

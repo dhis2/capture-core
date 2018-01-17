@@ -1,6 +1,7 @@
 // @flow
 export type LocaleDataType = {
     dateFnsLocale: Object,
+    weekDaysShort: Array<string>,
     weekDays: Array<string>,
     selectDatesText: string,
     selectDateText: string,
