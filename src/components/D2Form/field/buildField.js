@@ -9,6 +9,7 @@ import D2Date from '../../FormFields/DateAndTime/D2Date/D2Date.component';
 
 import OptionsCheckboxes from '../../FormFields/Options/Checkboxes/OptionsCheckboxes.component';
 import OptionsSelect from '../../FormFields/Options/SelectVirtualized/OptionsSelectVirtualized.component';
+import withDefaultMessages from './withDefaultMessages';
 import withSelectTranslations from '../../FormFields/Options/SelectVirtualized/withTranslations';
 import withConvertedOptionSet from '../../FormFields/Options/withConvertedOptionSet';
 
@@ -59,11 +60,12 @@ const getBaseTextField = (metaData: MetaDataElement) => {
     const props = createComponentProps({
         label: metaData.name,
         multiline: false,
+        required: metaData.compulsory,
     });
 
     return createFieldProps({
         name: metaData.id,
-        component: withFormBuilderInterface()(withDefaultFieldContainer()(TextField)),
+        component: withDefaultFieldContainer()(withDefaultMessages()(withFormBuilderInterface()(TextField))),
         props,
     }, metaData);
 };
@@ -87,7 +89,7 @@ const fieldForTypes = {
 
         return createFieldProps({
             name: metaData.id,
-            component: withFormBuilderInterface()(withDefaultFieldContainer({ marginBottom: 0 })(TrueFalse)),
+            component: withDefaultFieldContainer({ marginBottom: 0 })(withDefaultMessages()(withFormBuilderInterface()(TrueFalse))),
             props,
         }, metaData);
     },
@@ -99,7 +101,7 @@ const fieldForTypes = {
 
         return createFieldProps({
             name: metaData.id,
-            component: withFormBuilderInterface()(withDefaultFieldContainer()(TrueOnly)),
+            component: withDefaultFieldContainer({ marginBottom: 0 })(withDefaultMessages()(withFormBuilderInterface()(TrueOnly))),
             props,
         }, metaData);
     },
@@ -111,7 +113,7 @@ const fieldForTypes = {
 
         return createFieldProps({
             name: metaData.id,
-            component: withFormBuilderInterface()(withDefaultFieldContainer()(D2Date)),
+            component: withDefaultFieldContainer()(withDefaultMessages()(withFormBuilderInterface()(D2Date))),
             props,
         }, metaData);
     },
@@ -128,7 +130,7 @@ const optionSetField = (metaData: MetaDataElement) => {
 
     return createFieldProps({
         name: metaData.id,
-        component: withFormBuilderInterface()(withConvertedOptionSet()(withDefaultFieldContainer()(withSelectTranslations()(OptionsSelect)))),
+        component: withDefaultFieldContainer()(withDefaultMessages()(withConvertedOptionSet()(withFormBuilderInterface()(withSelectTranslations()(OptionsSelect))))),
         props,
     }, metaData);
 };

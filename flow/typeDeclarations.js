@@ -47,3 +47,10 @@ declare type UiEventData = {
         value: any
     }
 };
+
+declare type Theme = {
+    palette: Object,
+    typography: {
+        pxToRem: (size: number) => string,
+    }
+};

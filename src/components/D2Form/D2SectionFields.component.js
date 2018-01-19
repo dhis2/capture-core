@@ -1,7 +1,8 @@
 // @flow
 import React, { Component } from 'react';
 import type { ComponentType } from 'react';
-import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
+import FormBuilder from '../../__TEMP__/FormBuilder.component';
+//import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
 import buildField from './field/buildField';
 
 import MetaDataElement from '../../metaData/DataElement/DataElement';
@@ -56,7 +57,7 @@ class D2SectionFields extends Component<Props> {
     }
 
     handleUpdateStatus(a, b, c) {
-       
+
     }
 
     getFieldConfigWithValue(): Array<FieldConfigWithValue> {
@@ -64,6 +65,8 @@ class D2SectionFields extends Component<Props> {
     }
 
     render() {
+        const { onUpdateField, ...passOnProps } = this.props;
+
         return (
             <div>
                 <FormBuilder
@@ -71,6 +74,8 @@ class D2SectionFields extends Component<Props> {
                     fields={this.getFieldConfigWithValue()}
                     onUpdateField={this.handleUpdateField}
                     onUpdateFormStatus={this.handleUpdateStatus}
+                    validateOnStart
+                    {...passOnProps}
                 />
             </div>
         );

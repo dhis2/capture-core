@@ -7,14 +7,14 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui-next/styles';
 import classNames from 'classnames';
 
+import VirtualizedSelect from 'react-virtualized-select';
+import { FormControl } from 'material-ui-next/Form';
+import { InputLabel } from 'material-ui-next/Input';
+
 import 'react-select/dist/react-select.css';
 import 'react-virtualized/styles.css';
 import 'react-virtualized-select/styles.css';
 import './optionsSelectVirtualized.css';
-
-import VirtualizedSelect from 'react-virtualized-select';
-import { FormControl } from 'material-ui-next/Form';
-import { InputLabel } from 'material-ui-next/Input';
 
 import VirtualizedOption from './OptionsSelectVirtualizedOption.component';
 
@@ -27,7 +27,8 @@ const styles = theme => ({
         '&:after': {
             backgroundColor: theme.palette.primary[theme.palette.type === 'light' ? 'dark' : 'light'],
             left: 0,
-            bottom: 0,
+            zIndex: 200,
+            bottom: 1,
             // Doing the other way around crash on IE11 "''" https://github.com/cssinjs/jss/issues/242
             content: '""',
             height: 2,
@@ -51,8 +52,9 @@ const styles = theme => ({
     underline: {
         '&:before': {
             backgroundColor: theme.palette.input.bottomLine,
+            zIndex: 200,
             left: 0,
-            bottom: 0,
+            bottom: 1,
             // Doing the other way around crash on IE11 "''" https://github.com/cssinjs/jss/issues/242
             content: '""',
             height: 1,
@@ -78,15 +80,8 @@ const styles = theme => ({
             backgroundSize: '5px 1px',
         },
     },
-    lineRoot: {
-        zIndex: 200,
-        position: 'absolute',
-        bottom: 1,
-        left: 0,
-        width: '100%',
-    },
     selectRoot: {
-        paddingTop: '10px',
+        paddingTop: '12px',
         position: 'relative',
     },
     root: {
@@ -96,6 +91,9 @@ const styles = theme => ({
         width: '100%',
         zIndex: '200',
         pointerEvents: 'none',
+        position: 'absolute',
+        top: 0,
+        left: 0,
     },
     labelInFocus: {
         color: theme.palette.primary[theme.palette.type === 'light' ? 'dark' : 'light'],
@@ -224,7 +222,7 @@ class OptionsSelectVirtualized extends Component<Props, State> {
         const calculatedValue = toSelect.multi ? value : this.getValue();
         const shrinkLabel = !!calculatedValue || this.state.inFocus;
 
-        const lineClasses = classNames(classes.underline, classes.inkBar, classes.lineRoot, { [classes.focused]: inFocus });
+        const lineClasses = classNames(classes.underline, classes.inkBar, { [classes.focused]: inFocus });
         return (
             <div
                 ref={(containerInstance) => { this.materialUIContainerInstance = containerInstance; }}
@@ -246,7 +244,7 @@ class OptionsSelectVirtualized extends Component<Props, State> {
                 }
 
                 <div
-                    className={classes.selectRoot}
+                    className={`${classes.selectRoot} ${lineClasses}`}
                 >
                     <VirtualizedSelect
                         disabled={disabled}
@@ -266,9 +264,7 @@ class OptionsSelectVirtualized extends Component<Props, State> {
                         {...toSelect}
                     />
 
-                    <div
-                        className={lineClasses}
-                    />
+                    <div />
 
                 </div>
             </div>

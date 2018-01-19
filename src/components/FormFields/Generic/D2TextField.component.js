@@ -40,7 +40,6 @@ class D2TextField extends Component<Props> {
         return (
             <div ref={(containerInstance) => { this.materialUIContainerInstance = containerInstance; }}>
                 <TextField
-                    id={'1'}
                     inputRef={(inst) => { this.materialUIInstance = inst; }}
                     {...passOnProps}
                     onChange={this.handleChange}
