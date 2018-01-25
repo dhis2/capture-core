@@ -131,7 +131,7 @@ class FormBuilder extends React.Component {
                         errorStyle={fieldState.validating ? styles.validatingErrorStyle : undefined}
                         errorText={fieldState.valid ? errorText : fieldState.error}
                         touched={fieldState.touched}
-                        formCompletionAttempted={this.props.formCompletionAttempted}
+                        validationAttempted={this.props.validationAttempted}
                         {...props}
                     />
                 </div>

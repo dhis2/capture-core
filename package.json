@@ -26,7 +26,7 @@
   "devDependencies": {
       "d2": "^28.3.0",
       "d2-ui": "^28.0.3",
-      "d2-utilizr": "^0.2.15",            
+      "d2-utilizr": "^0.2.15",
       "fake-indexeddb": "^2.0.3",
       "jest-localstorage-mock": "^2.1.0",
       "material-ui": "^0.19.4",
@@ -38,6 +38,7 @@
       "react-select": "^1.2.1",
       "react-virtualized": "^9.17.2",
       "react-virtualized-select": "^3.1.1",
+      "redux-optimistic-ui": "^3.1.0",
       "reselect": "^3.0.1"
   }
 }

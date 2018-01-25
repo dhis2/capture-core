@@ -95,7 +95,7 @@ export default class Stage {
             }, {});
     }
 
-    convertValues(values: ?ValuesType | Array<ValuesType>, typeConverters: TypeConverters) {
+    convertValues<T: ?ValuesType | Array<ValuesType>>(values: T, typeConverters: TypeConverters): T {
         if (values) {
             if (isArray(values)) {
                 // $FlowSuppress
@@ -127,7 +127,7 @@ export default class Stage {
     static convertValue(rawValue: any, metaElement: DataElement, typeConverters: TypeConverters) {
         if ((rawValue || rawValue === false || rawValue === 0) && metaElement && typeConverters[metaElement.type]) {
             return isArray(rawValue)
-                ? rawValue.map(valuePart => typeConverters[metaElement.type](valuePart, metaElement)) 
+                ? rawValue.map(valuePart => typeConverters[metaElement.type](valuePart, metaElement))
                 : typeConverters[metaElement.type](rawValue, metaElement);
         }
         return rawValue;

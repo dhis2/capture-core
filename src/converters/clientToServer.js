@@ -2,27 +2,14 @@
 import moment from '../utils/moment/momentResolver';
 import elementTypes from '../metaData/DataElement/elementTypes';
 
+import { adjustLocalMomentDateToUtc } from '../utils/date/date.utils';
 import stringifyNumber from './common/stringifyNumber';
 
-type DateTimeFormValue = {
-    date: string,
-    time: string
-};
-
-function convertDateForEdit(rawValue: string): string {
-    const date = moment(rawValue);
-    const dateString = date.format('L');
-    return dateString;
-}
-
-function convertDateTimeForEdit(rawValue: string): DateTimeFormValue {
-    const dateTime = moment(rawValue);
-    const dateString = dateTime.format('L');
-    const timeString = dateTime.format('LT');
-    return {
-        date: dateString,
-        time: timeString,
-    };
+function convertDate(rawValue: string): string {
+    const editedDate = rawValue;
+    const momentDateLocal = moment(editedDate);
+    const momentDateUtc = adjustLocalMomentDateToUtc(momentDateLocal);
+    return momentDateUtc.toISOString();
 }
 
 export const valueConvertersForType = {
@@ -31,8 +18,7 @@ export const valueConvertersForType = {
     [elementTypes.INTEGER_POSITIVE]: stringifyNumber,
     [elementTypes.INTEGER_ZERO_OR_POSITIVE]: stringifyNumber,
     [elementTypes.INTEGER_NEGATIVE]: stringifyNumber,
-    [elementTypes.DATE]: convertDateForEdit,
-    [elementTypes.DATETIME]: convertDateTimeForEdit,
+    [elementTypes.DATE]: convertDate,
     [elementTypes.TRUE_ONLY]: () => 'true',
     [elementTypes.BOOLEAN]: (rawValue: boolean) => (rawValue ? 'true' : 'false'),
 };

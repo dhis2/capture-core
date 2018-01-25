@@ -1,15 +1,10 @@
 // @flow
-import { isDefined } from 'd2-utilizr';
+import isDefined from 'd2-utilizr/lib/isDefined';
+import isArray from 'd2-utilizr/lib/isArray';
 import log from 'loglevel';
-// import type { Reducer } from 'redux';
+import type { Reducer } from 'redux';
 
 import environments from '../constants/environments';
-
-type ReducerDescription = {
-    initValue: any,
-    name: string,
-    updaters: Object
-};
 
 type Action = {
     type: string,
@@ -17,6 +12,15 @@ type Action = {
 }
 
 type ActionOnReducerData = (state: any, action: Action) => void;
+
+type ReducerWrapper = (reducer: Reducer<any, Action>) => Reducer<any, Action>;
+
+type ReducerDescription = {
+    initValue: any,
+    name: string,
+    updaters: Object,
+    reducerWrappers: ReducerWrapper | Array<ReducerWrapper>
+};
 
 function updateStatePartInProduction<T>(
     state: ?T, action: Action, updatersForActionTypes: {[actionType: string]: () => T}, initValue: T): T {
@@ -78,12 +82,26 @@ const getDevelopmentReducer = (reducerDescription: ReducerDescription) => {
     };
 };
 
+function wrapReducers(reducer: Reducer<any, Action>, reducerWrappers: ReducerWrapper | Array<ReducerWrapper>) {
+    if (isArray(reducerWrappers)) {
+        return reducerWrappers.reduceRight((prevReducer, currentReducer) => currentReducer(prevReducer), reducer);
+    }
+
+    // $FlowSuppress
+    return reducerWrappers(reducer);
+}
+
 function buildReducer(reducerDescription: ReducerDescription) {
     const currentEnvironment = process && process.env && process.env.NODE_ENV && process.env.NODE_ENV;
 
-    const reducer = currentEnvironment === environments.prod
+    let reducer = currentEnvironment === environments.prod
         ? getProductionReducer(reducerDescription)
         : getDevelopmentReducer(reducerDescription);
+
+    if (reducerDescription.reducerWrappers) {
+        reducer = wrapReducers(reducer, reducerDescription.reducerWrappers);
+    }
+
     return reducer;
 }
 
@@ -96,10 +114,15 @@ export function buildReducersFromDescriptions(reducerDescriptions: Array<Reducer
     return reducers;
 }
 
-export function createReducerDescription(updaters: Object, name: string, initValue: any = {}): ReducerDescription {
+export function createReducerDescription(
+    updaters: Object,
+    name: string,
+    initValue: any = {},
+    reducerWrappers?: ?ReducerWrapper | Array<ReducerWrapper>): ReducerDescription {
     return {
         initValue,
         name,
         updaters,
+        reducerWrappers,
     };
 }
