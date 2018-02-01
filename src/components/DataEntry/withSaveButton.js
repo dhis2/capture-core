@@ -68,7 +68,7 @@ const getSaveButton = (InnerComponent: React.ComponentType<any>, optionFn?: ?Opt
                 return;
             }
 
-            const valid = formInstance.validateForm();
+            const valid = formInstance.validateFormScrollToFirstFailedField();
             if (valid) {
                 this.props.onSaveEvent(this.props.eventId, this.props.id);
             } else {

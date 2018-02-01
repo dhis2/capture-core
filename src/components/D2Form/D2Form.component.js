@@ -19,7 +19,7 @@ class D2Form extends Component<Props> {
 
         const metaData = this.props.metaDataStage;
         this.id = metaData.id;
-        
+
         this.validateForm = this.validateForm.bind(this);
 
         this.sectionInstances = new Map();
@@ -31,10 +31,35 @@ class D2Form extends Component<Props> {
             .every((sectionInstance: D2Section) => {
                 if (sectionInstance && sectionInstance.sectionFieldsInstance && sectionInstance.sectionFieldsInstance.getWrappedInstance() && sectionInstance.sectionFieldsInstance.getWrappedInstance().formBuilderInstance) {
                     const formBuilderInstance = sectionInstance.sectionFieldsInstance.getWrappedInstance().formBuilderInstance;
-                    return formBuilderInstance.state.form.valid;
+                    return formBuilderInstance.isValid();
                 }
                 return true;
             });
+    }
+
+    validateFormReturningFailedFields(): Array<any> {
+        return Array.from(this.sectionInstances.entries())
+            .map(entry => entry[1])
+            .reduce((failedFormFields: Array<any>, sectionInstance: D2Section) => {
+                if (sectionInstance && sectionInstance.sectionFieldsInstance && sectionInstance.sectionFieldsInstance.getWrappedInstance() && sectionInstance.sectionFieldsInstance.getWrappedInstance().formBuilderInstance) {
+                    const formBuilderInstance = sectionInstance.sectionFieldsInstance.getWrappedInstance().formBuilderInstance;
+                    if (!formBuilderInstance.isValid()) {
+                        failedFormFields = [...failedFormFields, ...formBuilderInstance.getInvalidFields()];
+                    }
+                }
+                return failedFormFields;
+            }, []);
+    }
+
+    validateFormScrollToFirstFailedField() {
+        const failedFields = this.validateFormReturningFailedFields();
+        if (!failedFields || failedFields.length === 0) {
+            return true;
+        }
+
+        const firstFailureInstance = failedFields[0].instance;
+        firstFailureInstance.goto && firstFailureInstance.goto();
+        return false;
     }
 
     setSectionInstance(instance: ?D2Section, id: string) {
@@ -54,7 +79,7 @@ class D2Form extends Component<Props> {
 
         const sections = metaDataSectionsAsArray.map(section => (
             <D2Section
-                ref={sectionInstance => this.setSectionInstance(sectionInstance, section.id)}
+                ref={(sectionInstance) => { this.setSectionInstance(sectionInstance, section.id); }}
                 key={section.id}
                 sectionMetaData={section}
                 getDataId={this.resolveStateContainerId}

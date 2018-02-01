@@ -10,35 +10,34 @@ import { actionTypes, completeEvent, completeEventError, saveEvent, saveEventErr
 export const completeEventEpic = (action$, store: ReduxStore) =>
     action$.ofType(actionTypes.START_COMPLETE_EVENT)
         .map((action) => {
-            const eventId = action.payload;
+            const { eventId, id } = action.payload;
             const state = store.getState();
             const clientValuesContainer = convertStateFormValuesToClient(eventId, state);
 
             if (clientValuesContainer.error) {
-                return completeEventError(clientValuesContainer.error);
+                return completeEventError(clientValuesContainer.error, id);
             }
             const clientValues = clientValuesContainer.values;
 
             // $FlowSuppress
             const serverValues = convertClientValuesToServer(clientValues, clientValuesContainer.stage);
-
-            return completeEvent(clientValues, serverValues, eventId, ensureState(state.events)[eventId]);
+            return completeEvent(clientValues, serverValues, eventId, ensureState(state.events)[eventId], id);
         });
 
 export const saveEventEpic = (action$, store: ReduxStore) =>
     action$.ofType(actionTypes.START_SAVE_EVENT)
         .map((action) => {
-            const eventId = action.payload;
+            const { eventId, id } = action.payload;
             const state = store.getState();
             const clientValuesContainer = convertStateFormValuesToClient(eventId, state);
 
             if (clientValuesContainer.error) {
-                return saveEventError(clientValuesContainer.error);
+                return saveEventError(clientValuesContainer.error, id);
             }
             const clientValues = clientValuesContainer.values;
 
             // $FlowSuppress
             const serverValues = convertClientValuesToServer(clientValues, clientValuesContainer.stage);
 
-            return saveEvent(clientValues, serverValues, eventId, ensureState(state.events)[eventId]);
+            return saveEvent(clientValues, serverValues, eventId, ensureState(state.events)[eventId], id);
         });

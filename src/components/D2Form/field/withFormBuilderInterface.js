@@ -7,8 +7,8 @@ type Event = {
     }
 };
 type Props = {
-    onBlur: (event: Event) => void,
-    onChange: (event: Event) => void,
+    onBlur: (event: Event, options?: ?Object) => void,
+    onChange: (event: Event, options?: ?Object) => void,
     changeEvent: string,
     errorStyle: ?string,
     errorText: ?string
@@ -34,16 +34,16 @@ export default () =>
                 this.handleChange = this.handleChange.bind(this);
             }
 
-            handleChange(value: any) {
+            handleChange(value: any, options?: ?Object) {
                 const onChange = this.props.onChange;
-                onChange(FormBuilderInterfaceBuilder.getEvent(value));
+                onChange(FormBuilderInterfaceBuilder.getEvent(value), options);
             }
 
-            handleBlur(value: any) {
+            handleBlur(value: any, options?: ?Object) {
                 const onBlur = this.props.onBlur;
-                onBlur(FormBuilderInterfaceBuilder.getEvent(value));
+                onBlur(FormBuilderInterfaceBuilder.getEvent(value), options);
             }
-            
+
             render() {
                 const { onBlur, onChange, changeEvent, errorStyle, errorText, ...passOnProps } = this.props;
 

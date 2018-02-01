@@ -11,7 +11,9 @@ type Props = {
     label: string,
     value: ?string,
     width: number,
+    calendarWidth?: ?number,
     onBlur: (value: string) => void,
+    onFocus?: ?() => void,
     classes: Object,
 };
 
@@ -60,6 +62,8 @@ class D2Date extends React.Component<Props, State> {
             popoverOpen: true,
             popoverAnchorEl: this.containerInstance,
         });
+
+        this.props.onFocus && this.props.onFocus();
     }
 
     handleDateSelected(value: string) {
@@ -93,7 +97,7 @@ class D2Date extends React.Component<Props, State> {
 
 
     render() {
-        const { width, classes, onBlur, ...passOnToTextField } = this.props;
+        const { width, calendarWidth, classes, onBlur, onFocus, ...passOnToTextField } = this.props;
         const { popoverOpen, popoverAnchorEl } = this.state;
 
         return (
@@ -117,7 +121,7 @@ class D2Date extends React.Component<Props, State> {
                     <D2DateCalendar
                         onDateSelected={this.handleDateSelected}
                         value={this.props.value}
-                        currentWidth={width}
+                        currentWidth={calendarWidth || width}
                     />
                 </D2DatePopup>
             </div>

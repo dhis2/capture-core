@@ -6,16 +6,10 @@
  * @returns {object} FSA-compliant action
  */
 export function actionCreator(type: string) {
-    return (payload: any, meta: any, error: any) => {
-        if (payload == null) {
-            payload = {};
-        }
-
-        return {
-            type,
-            payload,
-            meta,
-            error,
-        };
-    };
+    return (payload: any, meta: any, error: any) => ({
+        type,
+        payload,
+        meta,
+        error,
+    });
 }

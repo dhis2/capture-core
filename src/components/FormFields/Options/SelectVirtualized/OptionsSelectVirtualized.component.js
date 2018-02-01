@@ -220,7 +220,7 @@ class OptionsSelectVirtualized extends Component<Props, State> {
         const { optionSet, label, value, nullable, style, maxHeight, disabled, required, useHintLabel, onChange, onBlur, classes, translations, ...toSelect } = this.props;
         const { inFocus } = this.state;
         const calculatedValue = toSelect.multi ? value : this.getValue();
-        const shrinkLabel = !!calculatedValue || this.state.inFocus;
+        const labelIsShrinked = !!calculatedValue || this.state.inFocus;
 
         const lineClasses = classNames(classes.underline, classes.inkBar, { [classes.focused]: inFocus });
         return (
@@ -232,7 +232,7 @@ class OptionsSelectVirtualized extends Component<Props, State> {
                     (() => (
                         <FormControl component="fieldset" className={classes.formControl}>
                             <InputLabel
-                                shrink={shrinkLabel}
+                                shrink={labelIsShrinked}
                                 disabled={disabled}
                                 required={required}
                                 classes={inFocus ? this.inFocusLabelClasses : null}

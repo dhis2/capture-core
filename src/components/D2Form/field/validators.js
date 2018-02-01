@@ -3,6 +3,8 @@ import { wordToValidatorMap } from 'd2-ui/lib/forms/Validators';
 import isArray from 'd2-utilizr/src/isArray';
 
 import isValidDate from '../../../utils/validators/date.validator';
+import isValidDateTime from '../../../utils/validators/dateTime.validator';
+import isValidTime from '../../../utils/validators/time.validator';
 import { getTranslation } from '../../../d2/d2Instance';
 import { formatterOptions } from '../../../utils/string/format.const';
 import MetaDataElement from '../../../metaData/DataElement/DataElement';
@@ -29,10 +31,10 @@ const errorMessages = {
     POSITIVE_INTEGER: 'value_should_be_a_positive_integer',
     ZERO_OR_POSITIVE_INTEGER: 'value_should_be_zero_or_a_positive_integer',
     DATE: 'value_should_be_a_valid_date',
+    DATETIME: 'value_should_be_a_valid_datetime',
     TIME: 'value_should_be_a_valid_time',
+    PERCENTAGE: 'value_should_be_a_valid_percentage',
 };
-
-const isValidTime = (value: string) => (/^(([0-1]*[0-9])|(2[0-3]))([:.])*([0-5][0-9])$/.test(value));
 
 const isInteger = (value: string) => {
     const isValidNumberFn = wordToValidatorMap.get(wordValidatorKeys.NUMBER);
@@ -61,6 +63,11 @@ const isZeroOrPositiveInteger = (value: any) => {
     return isPositiveInteger(value);
 };
 
+const isValidPercentage = (value: any) => {
+    const replacedValue = value.replace('%', '');
+    const numberValidator = wordToValidatorMap.get(wordValidatorKeys.NUMBER);
+    return numberValidator(replacedValue);
+};
 
 const validatorsForTypes = {
     [elementTypes.NUMBER]: () => ({
@@ -87,9 +94,17 @@ const validatorsForTypes = {
         validator: isValidDate,
         message: getTranslation(errorMessages.DATE, formatterOptions.CAPITALIZE_FIRST_LETTER),
     }),
+    [elementTypes.DATETIME]: () => ({
+        validator: isValidDateTime,
+        message: getTranslation(errorMessages.DATETIME, formatterOptions.CAPITALIZE_FIRST_LETTER),
+    }),
     [elementTypes.EMAIL]: () => ({
         validator: wordToValidatorMap.get(wordValidatorKeys.EMAIL),
         message: getTranslation(wordToValidatorMap.get(wordValidatorKeys.EMAIL).message),
+    }),
+    [elementTypes.PERCENTAGE]: () => ({
+        validator: isValidPercentage,
+        message: getTranslation(errorMessages.PERCENTAGE, formatterOptions.CAPITALIZE_FIRST_LETTER),
     }),
 };
 

@@ -68,7 +68,7 @@ const getCompleteButton = (InnerComponent: React.ComponentType<any>, optionFn?: 
                 return;
             }
 
-            const valid = formInstance.validateForm();
+            const valid = formInstance.validateFormScrollToFirstFailedField();
             if (valid) {
                 this.props.onCompleteEvent(this.props.eventId, this.props.id);
             } else {

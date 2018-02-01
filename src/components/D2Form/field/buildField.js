@@ -6,10 +6,10 @@ import TextField from '../../FormFields/Generic/D2TextField.component';
 import TrueFalse from '../../FormFields/Generic/D2TrueFalse.component';
 import TrueOnly from '../../FormFields/Generic/D2TrueOnly.component';
 import D2Date from '../../FormFields/DateAndTime/D2Date/D2Date.component';
+import D2DateTime from '../../FormFields/DateAndTime/D2DateTime/D2DateTime.component';
 
 import OptionsCheckboxes from '../../FormFields/Options/Checkboxes/OptionsCheckboxes.component';
 import OptionsSelect from '../../FormFields/Options/SelectVirtualized/OptionsSelectVirtualized.component';
-import withDefaultMessages from './withDefaultMessages';
 import withSelectTranslations from '../../FormFields/Options/SelectVirtualized/withTranslations';
 import withConvertedOptionSet from '../../FormFields/Options/withConvertedOptionSet';
 
@@ -18,7 +18,12 @@ import MetaDataElement from '../../../metaData/DataElement/DataElement';
 import elementTypes from '../../../metaData/DataElement/elementTypes';
 
 import withFormBuilderInterface from './withFormBuilderInterface';
+import withDefaultChangeHandler from './withDefaultChangeHandler';
+import withDefaultShouldUpdateInterface from './withDefaultShouldUpdateInterface';
 import withDefaultFieldContainer from './withDefaultFieldContainer';
+import withDefaultMessages from './withDefaultMessages';
+import withHideCompatibility from './withHideCompatibility';
+import withGotoInterface from './withGotoInterface';
 
 import type { ComponentType } from 'react';
 
@@ -65,7 +70,7 @@ const getBaseTextField = (metaData: MetaDataElement) => {
 
     return createFieldProps({
         name: metaData.id,
-        component: withDefaultFieldContainer()(withDefaultMessages()(withFormBuilderInterface()(TextField))),
+        component: withGotoInterface()(withHideCompatibility()(withDefaultShouldUpdateInterface()(withDefaultFieldContainer()(withDefaultMessages()(withFormBuilderInterface()(withDefaultChangeHandler()(TextField))))))),
         props,
     }, metaData);
 };
@@ -89,7 +94,7 @@ const fieldForTypes = {
 
         return createFieldProps({
             name: metaData.id,
-            component: withDefaultFieldContainer({ marginBottom: 0 })(withDefaultMessages()(withFormBuilderInterface()(TrueFalse))),
+            component: withGotoInterface()(withHideCompatibility()(withDefaultShouldUpdateInterface()(withDefaultFieldContainer({ marginBottom: 0 })(withDefaultMessages()(withFormBuilderInterface()(TrueFalse)))))),
             props,
         }, metaData);
     },
@@ -101,7 +106,7 @@ const fieldForTypes = {
 
         return createFieldProps({
             name: metaData.id,
-            component: withDefaultFieldContainer({ marginBottom: 0 })(withDefaultMessages()(withFormBuilderInterface()(TrueOnly))),
+            component: withGotoInterface()(withHideCompatibility()(withDefaultShouldUpdateInterface()(withDefaultFieldContainer({ marginBottom: 0 })(withDefaultMessages()(withFormBuilderInterface()(TrueOnly)))))),
             props,
         }, metaData);
     },
@@ -113,11 +118,26 @@ const fieldForTypes = {
 
         return createFieldProps({
             name: metaData.id,
-            component: withDefaultFieldContainer()(withDefaultMessages()(withFormBuilderInterface()(D2Date))),
+            component: withGotoInterface()(withHideCompatibility()(withDefaultShouldUpdateInterface()(withDefaultFieldContainer()(withDefaultMessages()(withFormBuilderInterface()(withDefaultChangeHandler()(D2Date))))))),
+            props,
+        }, metaData);
+    },
+    [elementTypes.DATETIME]: (metaData: MetaDataElement) => {
+        const props = createComponentProps({
+            dateWidth: 200,
+            calendarWidth: 350,
+            label: metaData.name,
+            required: metaData.compulsory,
+        });
+
+        return createFieldProps({
+            name: metaData.id,
+            component: withGotoInterface()(withHideCompatibility()(withDefaultShouldUpdateInterface()(withDefaultFieldContainer()(withDefaultMessages()(withFormBuilderInterface()(withDefaultChangeHandler()(D2DateTime))))))),
             props,
         }, metaData);
     },
     [elementTypes.TIME]: (metaData: MetaDataElement) => getBaseTextField(metaData),
+    [elementTypes.PERCENTAGE]: (metaData: MetaDataElement) => getBaseTextField(metaData),
     [elementTypes.UNKNOWN]: () => null,
 };
 
@@ -130,7 +150,7 @@ const optionSetField = (metaData: MetaDataElement) => {
 
     return createFieldProps({
         name: metaData.id,
-        component: withDefaultFieldContainer()(withDefaultMessages()(withConvertedOptionSet()(withFormBuilderInterface()(withSelectTranslations()(OptionsSelect))))),
+        component: withGotoInterface()(withHideCompatibility()(withDefaultShouldUpdateInterface()(withDefaultFieldContainer()(withDefaultMessages()(withConvertedOptionSet()(withFormBuilderInterface()(withSelectTranslations()(OptionsSelect)))))))),
         props,
     }, metaData);
 };

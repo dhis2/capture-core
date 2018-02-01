@@ -1,10 +1,8 @@
 // @flow
 import React, { Component } from 'react';
 import TextField from 'material-ui-next/TextField';
-// import gotoFn from '../Utils/gotoMixin';
 
 type Props = {
-    label: string,
     onChange: (value: string, event: UiEventData) => void,
     onBlur: (value: string, event: UiEventData) => void,
 };
@@ -13,7 +11,7 @@ class D2TextField extends Component<Props> {
     static defaultProps = {
         value: '',
     };
-    // goto: () => void;
+
     materialUIInstance: any;
     materialUIContainerInstance: any;
     handleChange: (event: UiEventData) => void;
@@ -23,7 +21,6 @@ class D2TextField extends Component<Props> {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
-        // this.goto = gotoFn;        
     }
 
     handleChange(event: UiEventData) {

@@ -2,6 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import isObject from 'd2-utilizr/lib/isObject';
+import isDefined from 'd2-utilizr/lib/isDefined';
 import AsyncValidatorRunner from './AsyncValidatorRunner';
 
 import CircularProgres from './CircularProgress';
@@ -22,6 +23,8 @@ class FormBuilder extends React.Component {
         if (this.props.validateOnStart) {
             this.initValidate();
         }
+
+        this.fieldInstances = new Map();
     }
 
     /**
@@ -84,6 +87,37 @@ class FormBuilder extends React.Component {
         };
     }
 
+    isValid() {
+        return this.state.form.valid;
+    }
+
+    getInvalidFields() {
+        const propFields = this.props.fields;
+        return propFields.reduce((invalidFieldsContainer, field) => {
+            const stateField = this.state.fields[field.name];
+            if (!stateField.valid) {
+                invalidFieldsContainer.push({
+                    prop: field,
+                    instance: this.fieldInstances.get(field.name),
+                    state: stateField,
+                });
+            }
+            return invalidFieldsContainer;
+        }, []);
+    }
+
+    /**
+     *  Retain a reference to the form field instance
+    */    
+    setFieldInstance(instance, id) {
+        if (!instance) {
+            if (this.fieldInstances.has(id)) {
+                this.fieldInstances.delete(id);
+            }
+        } else {
+            this.fieldInstances.set(id, instance);
+        }
+    }
 
     /**
      * Render the form fields.
@@ -125,6 +159,7 @@ class FormBuilder extends React.Component {
                         <CircularProgres mode="indeterminate" size={0.33} style={styles.progress} />
                     ) : undefined}
                     <field.component
+                        ref={(fieldInstance) => { this.setFieldInstance(fieldInstance, field.name); }}
                         value={fieldState.value}
                         onChange={props.changeEvent && props.changeEvent === 'onBlur' ? onBlurChangeHandler : changeHandler}
                         onBlur={props.changeEvent && props.changeEvent === 'onBlur' ? changeHandler : undefined}
@@ -302,8 +337,9 @@ class FormBuilder extends React.Component {
      *
      * @param fieldName The name of the field that changed.
      * @param event An event object. Only `event.target.value` is used.
+     * @param options Object currently handling touched overrides (used where one field contains multiple inputs)
      */
-    handleFieldChange(fieldName, event) {
+    handleFieldChange(fieldName, event, options) {
         const newValue = event.target.value;
 
         const field = this.getFieldProp(fieldName);
@@ -311,24 +347,25 @@ class FormBuilder extends React.Component {
         // Using custom clone function to maximize speed, albeit more error prone
         const stateClone = this.getStateClone();
 
+        const touched = options && isDefined(options.touched) ? options.touched : true;
         // If the field has changeEvent=onBlur the change handler is triggered whenever the field loses focus.
         // So if the value didn't actually change, abort the change handler here.
         if (field.props && field.props.changeEvent === 'onBlur') {
             if (!isObject(newValue)) {
-                if (newValue === (field.value ? field.value : '')) {
-                    this.setState(this.updateFieldState(stateClone, fieldName, { touched: true, retainError: true }));
+                if ((newValue ? newValue : '') === (field.value ? field.value : '')) {
+                    this.setState(this.updateFieldState(stateClone, fieldName, { touched, retainError: true }));
                     return;
                 }
             } else {
-                if (field.onIsEqual(newValue, field.value)) {
-                    this.setState(this.updateFieldState(stateClone, fieldName, { touched: true, retainError: true }));
+                if (field.onIsEqual && field.onIsEqual(newValue, field.value)) {                    
+                    this.setState(this.updateFieldState(stateClone, fieldName, { touched, retainError: true }));
                     return;
                 }
             }
         }
 
         // Update value, and set pristine to false
-        this.setState(this.updateFieldState(stateClone, fieldName, { pristine: false, value: newValue, touched: true }),
+        this.setState(this.updateFieldState(stateClone, fieldName, { pristine: false, value: newValue, touched }),
             () => {
                 // Cancel async validators in progress (if any)
                 if (this.asyncValidators[fieldName]) {
@@ -346,7 +383,7 @@ class FormBuilder extends React.Component {
                     // Sync validators failed set field status to false
                     this.setState(this.updateFieldState(stateClone, fieldName, { valid: false, error: validatorResult }), () => {
                         // Also emit when the validator result is false
-                        this.props.onUpdateFormStatus(this.state.form);
+                        this.props.onUpdateFormStatus && this.props.onUpdateFormStatus(this.state.form);
                         this.props.onUpdateField(fieldName, newValue);
                     });
                 }
@@ -358,7 +395,7 @@ class FormBuilder extends React.Component {
             // Set field and form state to 'validating'
             this.setState(this.updateFieldState(stateClone, fieldName, { validating: true }),
                 () => {
-                    this.props.onUpdateFormStatus(this.state.form);
+                    this.props.onUpdateFormStatus && this.props.onUpdateFormStatus(this.state.form);
                     this.props.onUpdateField(fieldName, newValue);
 
                     // TODO: Subscription to validation results could be done once in `componentDidMount` and be
@@ -377,7 +414,7 @@ class FormBuilder extends React.Component {
                                         },
                                     ), () => {
                                         this.cancelAsyncValidators(status.fieldName);
-                                        this.props.onUpdateFormStatus(this.state.form);
+                                        this.props.onUpdateFormStatus && this.props.onUpdateFormStatus(this.state.form);
                                     },
                                 );
                             },
@@ -387,7 +424,7 @@ class FormBuilder extends React.Component {
                 });
         } else {
             this.setState(this.updateFieldState(stateClone, fieldName, { valid: true }), () => {
-                this.props.onUpdateFormStatus(this.state.form);
+                this.props.onUpdateFormStatus && this.props.onUpdateFormStatus(this.state.form);
                 this.props.onUpdateField(fieldName, newValue);
             });
         }

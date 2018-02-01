@@ -56,10 +56,6 @@ class D2SectionFields extends Component<Props> {
         this.props.onUpdateField(this.props.dataId, elementId, value);
     }
 
-    handleUpdateStatus(a, b, c) {
-
-    }
-
     getFieldConfigWithValue(): Array<FieldConfigWithValue> {
         return this.formFields.map(formField => ({ ...formField, value: this.props.values[formField.name] }));
     }
@@ -73,7 +69,6 @@ class D2SectionFields extends Component<Props> {
                     ref={(instance) => { this.formBuilderInstance = instance; }}
                     fields={this.getFieldConfigWithValue()}
                     onUpdateField={this.handleUpdateField}
-                    onUpdateFormStatus={this.handleUpdateStatus}
                     validateOnStart
                     {...passOnProps}
                 />
